@@ -43,8 +43,8 @@ attach(safelv_pace)
 #list variable names so that they can be used later
 names(safelv_pace)
 
-#  patient_id
-#	screening_date
+# patient_id
+# screening_date
 #	patient_initials
 #	inclusion_criteria
 #	exclusion_criteria
@@ -75,7 +75,7 @@ names(safelv_pace)
 #	dob
 #	age_enrollment
 #	marital_status
-#	given_birth
+#	have_children
 #	num_children
 #	race
 #	ethnicity
@@ -90,7 +90,6 @@ names(safelv_pace)
 #	etiology
 #	underlying_heart_disease
 #	ecg_basal
-#	comorbities
 #	comorbid
 #	history_cardiovascular
 #	non_cardiovasc_disease
@@ -287,8 +286,7 @@ names(safelv_pace)
 #	ventric_pulse_amplitude
 #	conclusion_lead_analysis
 #	conclusion_device
-#	pm_interrogation_file
-#	pm_program_file
+#	pm_print_file
 #	comments
 #	date_biomarkers
 #	bnp
@@ -557,7 +555,7 @@ new.var  <- car::recode(old.var, " 1:2 = 'A'; 3 = 'C'; '' = NA; else = 'B' ")
 #TABLE 1: DEMOGRAPHICS
 ###########################################################################################
 #describes your entire dataset
-describe(templateData)
+describe(safelv_pace)
 
 summary(variable)
 qplot(variable)
