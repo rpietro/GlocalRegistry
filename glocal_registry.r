@@ -551,6 +551,38 @@ str(safelv_pace)
 
 new.var  <- car::recode(old.var, " 1:2 = 'A'; 3 = 'C'; '' = NA; else = 'B' ")
 
+
+###############################################################################################
+#To recode a continuous variable into a categorical one
+###############################################################################################
+
+#Examples
+
+age_cat  <- car::recode(Age_PM_implantation, " 0:8 = 1; 8:22 = 2 ")
+tabulate(age_cat)
+
+time_cat <- car::recode(Time_under_pacing, " 0:12 = 1; 12:31 = 2 ")
+tabulate(time_cat)
+
+qrs_cat <- car::recode(Paced_QRS_duration, " 92:150 = 1; 150:260 = 2 ")
+tabulate(qrs_cat)
+
+feve_cat <- car::recode(Ejection_Fraction, " 29:61 = 1; 61:79 = 2 ")
+tabulate(feve_cat)
+
+nyha_cat <- car::recode(FC_NYHA_before._PM, " I = 1; II= 2 ")
+tabulate(nyha_cat)
+
+
+###################################################################################
+#To recode a categorical variable into a numerical
+###################################################################################
+
+#Example
+nyha_pre  <- car::recode(FC_NYHA_before._PM, " 'I' = 1; 'II' = 2; 'III'= 2; NA = NA; else = 3 ")
+tabulate(nyha_pre)
+
+
 ###########################################################################################
 #TABLE 1: DEMOGRAPHICS
 ###########################################################################################
@@ -567,27 +599,151 @@ t.test(outcome~predictor)
 CrossTable(outcome, predictor, chisq=TRUE, missing.include=TRUE, format="SAS", prop.r=FALSE)
 
 
-########################################################################################
-# TABLE WITH MODELS
-########################################################################################
+#######################################################################################
+#FIGURE - CARDIAC PACING MODE VS AGE AT FIRST PACEMAKER IMPLANTATION
+#######################################################################################
 
-logisticmodel1  <- glm(outcome ~ predictor + confounder,family=binomial(link="logit"))
-summary(logisticmodel1) #gives you model results
-coefficients(logisticmodel1) # model coefficients
-confint(logisticmodel1, level=0.95) # CIs for model parameters 
-fitted(logisticmodel1) # predicted values
-residuals(logisticmodel1) # residuals
-influence(logisticmodel1) # regression diagnostics
-layout(matrix(c(1,2,3,4),2,2)) # creates the white space for 4 graphs/page 
-plot(logisticmodel1) #generates 4 graphs/page
+#Examples
+qplot(Type_PM, Age_PM_implantation, geom="boxplot", na.rm = TRUE)
 
-survivalmodel1 <- coxph(Surv(time_to_event, event_yes_no) ~ predictor + confounder1 + confounder2, ties="efron")
-#below will test for proportional hazards assumption
-prop.assump1 <- cox.zph(survivalmodel1) 
-print(prop.assump1) #display results for assumption 
-plot(prop.assump1)  #plot curves -- from the help page: "If the proportional hazards assumption is true, beta(t) will be a horizontal line. The printout gives a test for slope=0."
-#summary results for the model
-summary(survivalmodel1)
+#other option (with more details)
+qplot(Type_PM, Age_PM_implantation, geom=c("boxplot", "jitter"), na.rm = TRUE)
+
+
+##################################################################################
+#DESCRIPTIVE ANALYSIS - QOL - SF-36
+##################################################################################
+
+#Use the same model for others QOL Questionnaires
+
+summary(physical_functioning)
+sd(physical_functioning, na.rm = TRUE)
+
+summary(role_physical)
+sd(role_physical, na.rm = TRUE)
+
+summary(bodily_pain)
+sd(bodily_pain, na.rm = TRUE)
+
+summary(general_health)
+sd(general_health, na.rm = TRUE)
+
+summary(vitality)
+sd(vitality, na.rm = TRUE)
+
+summary(social_functioning)
+sd(social_functioning, na.rm = TRUE)
+
+summary(role_emotional)
+sd(role_emotional, na.rm = TRUE)
+
+summary(mental_health)
+sd(mental_health, na.rm = TRUE)
+
+summary(summary_physical_health)
+sd(summary_physical_health, na.rm = TRUE)
+
+summary(summary_mental_health)
+sd(summary_mental_health, na.rm = TRUE)
+
+
+
+###################################################################################
+#FIGURE - QOL SCORES
+###################################################################################
+
+#Use the same model for others QOL Questionnaires
+
+#SF36 Domains
+
+#Examples
+graphics.frame1 <- data.frame(physical_functioning, role_physical,bodily_pain, general_health, vitality, social_functioning, role_emotional, mental_health, summary_physical_health, summary_mental_health)
+VALUE=rnorm(66) )
+
+ggplot(melt(graphics.frame1), aes(x = variable, y = value)) + geom_boxplot() + xlab("SF-36 Domains") + ylab("Scores") + opts(axis.title.x = theme_text(size=12), axis.text.x  = theme_text(angle=10, hjust=0.8, size=10))                                                                     
+
+#below will plot a continuous vs. a categorical variable
+qplot(Type_PM, summary_physical_health, geom = "boxplot")
+
+#below will plot a continuous variable
+qplot(summary_physical_health, summary_mental_health) + geom_smooth(method = "loess", size = 2)
+
+#below will plot two or more categorical variable
+mosaicplot(~ Type_PM + Gender + Type_lead, main = "Survival on the Titanic")
+
+table1  <- table(Type_PM, Gender, Type_lead)
+mosaic(table1, shade=TRUE, legend=TRUE)
+
+
+#######################################################################################
+#ASSOCIATION BETWEEN QOL VS PATIENT CHARACTERISTICS 
+#######################################################################################
+
+#Use this examples for others QOL Questionnaires
+
+#to measure an association between two categorical variables
+CrossTable(Type_PM, Gender, chisq=TRUE, missing.include=TRUE, format="SAS", prop.r=FALSE) 
+
+#to measure an association between a numeric and a categorical variable
+summary (physical_functioning ~ Gender)
+t.test(physical_functioning ~ Gender)
+
+###################################################################################
+#FUNCTIONAL EXERCISE CAPACITY - DESCRIPTIVE TABLE
+####################################################################################
+
+#To describe the distances during the 6MWD test
+      
+qplot(Walked_distance_m, Predicted_walked_distance) + geom_smooth(method = "loess", size = 2)
+model10 <- lm(Walked_distance_m ~ Predicted_walked_distance)
+summary(model10)
+      
+summary(Walked_distance_m)
+summary(Predicted_walked_distance)
+#cor(Walked_distance_m, Predicted_walked_distance)
+      
+model21  <- glm(Walked_distance_m ~ Type_PM + Gender, family=gaussian())
+summary(model21)
+      
+model21  <- glm(Walked_distance_m ~ Type_PM, family=gaussian())
+summary(model21)
+      
+summary(Walked_distance_m)
+sd(Walked_distance_m, na.rm = TRUE)
+      
+summary(Predicted_walked_distance)
+sd(Predicted_walked_distance, na.rm = TRUE)
+      
+#Predicted distance means the adjusted distance (by an equation) according patients'characteristics (age, height, weight )
+      
+summary (Walked_distance_m ~ Predicted_walked_distance)
+t.test(Walked_distance_m ~ Predicted_walked_distance)
+      
+         
+####################################################################################
+# ASSOCIATION BETWEEN FUNCTIONAL EXERCISE CAPACITY VS PATIENT CHARACTERISTICS 
+####################################################################################
+            
+#To compare Patient Characteristics vs walked_distance_m
+
+summary (Walked_distance_m ~ Gender)
+t.test(Walked_distance_m ~ Gender)
+
+summary (Walked_distance_m ~ Cardiovascular_drugs)
+t.test(Walked_distance_m ~ Cardiovascular_drugs)
+            
+summary (Walked_distance_m ~ Type_PM)
+t.test(Walked_distance_m ~ Type_PM)      
+            
+summary (Walked_distance_m ~ Ventricular_dysfunction)
+t.test(Walked_distance_m ~ Ventricular_dysfunction)
+
+feve_cat <- car::recode(Ejection_Fraction, " 29:61 = 1; 61:79 = 2 ")
+summary (Walked_distance_m ~ feve_cat) 
+t.test (Walked_distance_m ~ feve_cat)
+
+
+
 
 #######################################################################################
 #template_secondary_data_analysis.R is licensed under a Creative Commons Attribution - Non commercial 3.0 Unported License. You are free: to Share — to copy, distribute and transmit the work to Remix — to adapt the work, under the following conditions: Attribution — You must attribute the work in the manner specified by the author or licensor (but not in any way that suggests that they endorse you or your use of the work). Noncommercial — You may not use this work for commercial purposes. With the understanding that: Waiver — Any of the above conditions can be waived if you get permission from the copyright holder. Public Domain — Where the work or any of its elements is in the public domain under applicable law, that status is in no way affected by the license. Other Rights — In no way are any of the following rights affected by the license: Your fair dealing or fair use rights, or other applicable copyright exceptions and limitations; The author's moral rights; Rights other persons may have either in the work itself or in how the work is used, such as publicity or privacy rights. Notice — For any reuse or distribution, you must make clear to others the license terms of this work. The best way to do this is with a link to this web page. For more details see http://creativecommons.org/licenses/by-nc/3.0/
