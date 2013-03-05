@@ -1,0 +1,354 @@
+# Data quality report associated to the project "Pacemaker Registry - Open Data Collection"
+
+Kátia Regina da Silva, RN PhD - katia.regina@incor.usp.br,
+Roberto Costa, MD PhD, - rcosta@incor.usp.br
+Elizabeth Sartori Crevelari MD - elizabethkaratebrasil@gmail.com
+Marianna Sobral Lacerda, RN - sobralmarianna@gmail.com
+Caio Marcos de Moraes Albertini, MD - email cmalbertini@gmail.com
+Martino Martinelli Filho, MD PhD - email martino@incor.usp.br
+Jose Eduardo Santana, MSc candidate jes@ic.ufal.br
+Jacson Barros, MSc Jacsonv@ffm.br
+Joao Ricardo Nickenig Vissoci, PhD candidate jnv4@duke.edu
+Ricardo Pietrobon, MD, PhD rpietro@duke.edu
+
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE }
+install.packages(c("Hmisc","ggplot2","VIM","car","psych","gmodels","vmv","qcc","GGally","gridExtra","RCurl","nortest","vcd","gdata"), repos=c("http://cran.us.r-project.org"), type=c("both"))
+library(Hmisc)
+library(nortest)
+library(ggplot2)
+library(tcltk)
+library(VIM)
+library("car")
+library("psych")
+library("gmodels")
+library(vmv)
+library(qcc)
+library(GGally)
+library(gridExtra)
+library(RCurl)
+library(rattle)
+library(vcd)
+library(gdata)
+```
+
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE }
+data <- read.csv("Glocal_14Jan2013.csv")
+attach(data)
+```
+
+## Introduction 
+The main objective of this report is to provide a 24/7 snapshop at the data quality behind the Pacemaker Registry - Open Data Collection project. This includes not only the original data set collected under Dr. Katia Regina da Silva, Brazil, but also any additional data sets brought in from other registries, prospective studies, as well as Linked Open Data sources.
+
+Methodological details about the study can be found at [Pacemaker Registry - Open Data Collection](https://sites.google.com/site/pmregistry/). 
+
+## Data Description
+Below is a full list of variables along with their class (variable type according to the R language) and alternative responses. Most of the variable names should be intuitive, but a full dictionary is also be found at [Pacemaker Registry - Open Data Collection](https://sites.google.com/site/pmregistry/).
+
+A description of missing values is provided in the Figures below the descriptions, where missing values are presented in yellow.
+
+``````{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE }
+#Creating data frames to plot missing values
+Miss1<-data.frame(date_enrolled, sex, dob, age_enrollment ,marital_status, have_children, num_children, race, ethnicity, professional_category)
+Miss2<-data.frame(date_baseline_evaluation, functional_class_basal, underlying_heart_disease, comorbid, allergic_iodine, date_preoperative_ecg, ecg_rhythm_preop, atrial_heart_rate_basal, ventric_heart_rate_basal, p_duration_basal, ecg_pri_obtainable, pri_duration_basal, qrs_duration_basal, qrs_axis_basal, xray_date, date_lab_tests_basal, hemoglobin_basal, hematocrit_basal, platelets_basal, leukocytes_basal, urea_basal, creatinine_basal, sodium_basal, potassium_basal, prothrombin_time_basal, prothrombin_activity_basal, aptt_basal,inr_basal)
+Miss2<-data.frame(date_baseline_evaluation, functional_class_basal, underlying_heart_disease, comorbid, allergic_iodine, date_preoperative_ecg, ecg_rhythm_preop, atrial_heart_rate_basal, ventric_heart_rate_basal, p_duration_basal, ecg_pri_obtainable, pri_duration_basal, qrs_duration_basal, qrs_axis_basal, xray_date, date_lab_tests_basal, hemoglobin_basal, hematocrit_basal, platelets_basal, leukocytes_basal, urea_basal, creatinine_basal, sodium_basal, potassium_basal, prothrombin_time_basal, prothrombin_activity_basal, aptt_basal,inr_basal)
+Miss3<-data.frame(randomization, date_pm_implantation, temporary_pm, temporary_pm_date, days_temporary_pacing, temporary_pm_venous_access, type_anesthesia, procedure_performed, time_entry_operation_room, incision_time, vascular_access_time, ventr_lead_placement_time, skin_closure_time, total_fluoroscopy_time, total_lead_positioning, total_procedure_time, pulse_generator_model, pulse_generator_sn, pulse_generator_pocket, pulse_generator_site, crossover,intraop_complications,length_hospital_stay)
+Miss4<-data.frame(ra_lead_model, ra_lead_sn, ra_lead_venous_access, ra_lead_positioning, ra_lead_threshold_uni, ra_lead_threshold_bi, ra_lead_impedance_uni, ra_lead_impedance_bi, ra_lead_sense_p_uni, ra_lead_sense_p_bi, rv_lead_model, rv_lead_sn,rv_lead_venous_access, rv_lead_position, rv_lead_threshold, rv_lead_threshold_bi, rv_lead_impedance_uni, rv_lead_impedance_bi, rv_lead_sense_r_uni, rv_lead_sense_r_bi, lv_lead_model, lv_lead_sn, lv_lead_venous_access, lv_lead_pacing_site, lv_lead_threshold_uni, lv_lead_impedance_uni, lv_lead_sense_r_uni, escape_rhythm)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE }
+#Call for descriptive data
+Hmisc::describe(Miss1)
+names(Miss1)<-c('V1','V3','V4','V5','V6','V7','V8','V9','V10','V11')
+old.par <- par(mar = c(5, 4, 4, 2))
+tablemissing(Miss1)
+par(old.par)
+parcoordMiss(Miss1)
+pbox(Miss1)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE }
+Hmisc::describe(Miss2)
+names(Miss2)<-c('V12','V13','V14','V15','V16','V17','V18','V19','V20','V21','V22','V23','V24','V25','V26','V27','V28','V29','V30','V31','V32','V33','V34','V35','V36','V37','V38','V39') #Adjusting variables names to fit the missing plot's area
+old.par <- par(mar = c(5, 4, 4, 2))
+tablemissing(Miss2)
+par(old.par)
+parcoordMiss(Miss2)
+pbox(Miss2)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE }
+Hmisc::describe(Miss3)
+names(Miss3)<-c('V40','V41','V42','V43','V44','V45','V46','V47','V48','V49','V50','V51','V52','V53','V54','V55','V56','V57','V58','V59','V60','V61','V62') #Adjusting variables names to fit the missing plot's area
+old.par <- par(mar = c(5, 4, 4, 2))
+tablemissing(Miss3)
+par(old.par)
+parcoordMiss(Miss3)
+pbox(Miss3)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE }
+Hmisc::describe(Miss4)
+names(Miss4)<-c('V63','V64','V65','V66','V67','V68','V69','V70','V71','V72','V73','V74','V75','V76','V77','V78','V79','V80','V81','V82','V83','V84','V85','V86','V87','V88','V89','V90') #Adjusting variables names to fit the missing plot's area
+old.par <- par(mar = c(5, 4, 4, 2))
+tablemissing(Miss4)
+par(old.par)
+parcoordMiss(Miss4)
+pbox(Miss4)
+```
+
+## Data Quality
+
+Below is a series of graph representations regarding data quality control. Firste set o graphs allow to evaluate trends, cycles, and shifts as data quality indicator. These graphs were created with the [qcc package](http://cran.r-project.org/web/packages/qcc/index.html) from R Language Open Software.
+
+```{r, echo=FALSE, warning=FALSE}
+#Sets ploting area to gather two plots in the same area
+#Since the data of collection variable is creating groups of less than 2 subjects, which id needed to run the plots, I will gather data of collection into month of collection, widening the group size.
+month_collection<-car::recode(data$date_enrolled,"c('1/3/13', '1/3/13','1/7/13','1/9/13') = 'Jan/2013'; c('6/11/12','6/25/12') = 'Jun/2012'; c('7/17/12', '7/19/12','7/24/12', '7/27/12', '7/30/12','7/6/12') = 'Jul/2012'; c('8/16/12','8/8/12','9/20/12') = 'Aug/2012'; c('10/10/12','10/25/12','10/30/12') = 'Oct/2012'; c('11/19/12', '11/21/12','11/26/12', '11/5/12', '11/6/12') = 'Nov/2012'; c('12/11/12','12/12/12', '12/4/12') = 'Dec/2012'")
+op<-par(mfrow=c(1,2), mar=c(5,5,3,5))#Create the qcc object, which is needed to the data quality control charts
+#This object is created by a numerical variable [e.g. age_enrollment] devided by data of data collection [e.g. date_enrolled]
+qcc <- qcc.groups(age_enrollment,month_collection)
+#qcc <- subset(qcc1,qcc1[,2]>0) #Don't remeber why I did this
+obj1x <- qcc(qcc, type="xbar",data.name="Age of Enrollment", add.stats=FALSE,
+             ylab="Avarage", xlab="Groups of Observations")
+obj1s <- qcc(qcc, type="S", data.name="Age of Enrollment", add.stats=FALSE,
+             ylab="St. Deviation", xlab="Groups of Observations",bg="white")
+par(op)
+```
+
+```{r, echo=FALSE, warning=FALSE}
+op<-par(mfrow=c(1,2), mar=c(5,5,3,5))
+cusum <- cusum(qcc, decision.interval = 4, se.shift = 1,  data.name="Age of Enrollment",add.stats=FALSE)
+ewma <- ewma(qcc, lambda=0.2, nsigmas=3,  data.name="Age of Enrollment",add.stats=FALSE)
+par(op)
+```
+
+Another example using a different continuous variable (Lenght of hospital stay)
+
+```{r, echo=FALSE, warning=FALSE}
+op<-par(mfrow=c(1,2), mar=c(5,5,3,5))
+qcc3 <- qcc.groups(data$length_hospital_stay, month_collection)
+qcc4 <- subset(qcc3,qcc3[,2]>0)
+obj2x <- qcc(qcc4, type="xbar",data.name="Lenght of Hospital Stay", add.stats=FALSE,
+             ylab="Avarage", xlab="Groups of Observations")
+obj2s <- qcc(qcc4, type="S", data.name="Lenght of Hospital Stay", add.stats=FALSE,
+             ylab="St. Deviation", xlab="Groups of Observations")
+par(op)
+```
+
+```{r, echo=FALSE, warning=FALSE}
+op<-par(mfrow=c(1,2), mar=c(5,5,3,5))
+cusum <- cusum(qcc4, decision.interval = 4, se.shift = 1,data.name="Lenght of Hospital Stay",add.stats=FALSE)
+ewma <- ewma(qcc4, lambda=0.2, nsigmas=3,data.name="Lenght of Hospital Stay",add.stats=FALSE)
+par(op)
+```
+
+Also, OC Curves allow to evaluete power of the data quality control process. However, since we are working to control data quality for dataset with different temporal sample sizes, OC plots were not able to be created.
+
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+#oc.curves(obj1x)
+#oc.curves(obj2x)
+```
+
+For categorical variables (e.g. randomization or underlying heart disease), we used data quality control charts for proportions over a group of subjects.
+
+```{r, echo=FALSE, warning=FALSE}
+randomization<-as.factor(randomization)
+randomization<-as.factor(randomization)
+sizematrix<-as.matrix(table(month_collection))
+Pchart<-as.data.frame(table(month_collection,randomization))
+Pchart$size<-c(sizematrix)
+Pchart<-subset(Pchart,randomization=='2')
+obj2 <- qcc(Pchart$Freq, sizes=Pchart$size, type="p",
+            data.name="Randomization", add.stats=FALSE,
+            ylab="Proportion of First Randomized Group", xlab="Groups of Observations")
+```
+
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+#oc.curves(obj2)
+#oc.curves(obj3)
+```
+
+In order to monitor for possible data fabrication, we created graphics comparing single digit distribution against Benford's Law or first-digit law. Briefly, this law refers to the frequency of digits in real-life sources of data. For example, digit 1 occurs as the first digit in close to 30% of all numbers, while a digit such as 9 only occurs in about 5% of the time. In our graphics, we plot the expected versus the actual digit distribution.
+
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+#Creating dataframe for variables taht will be plotted with Benford's Law chart
+benford<-data.frame(atrial_heart_rate_basal, ventric_heart_rate_basal, qrs_duration_basal, qrs_axis_basal, hemoglobin_basal, hematocrit_basal, platelets_basal, leukocytes_basal, urea_basal, creatinine_basal, sodium_basal, potassium_basal, prothrombin_time_basal, prothrombin_activity_basal, aptt_basal, inr_basal)
+
+benford <- function(x, main="Variable of Interest", legend=c("Benford's Law", "Variable of Interest"))
+{
+  # A simple example using the audit data from Rattle.
+  require(rattle) #Package required to Benford's Law plot
+  expect <- unlist(lapply(1:9, function(x) log10(1 + 1/x))) #Create Benford's Law expectd values
+  ds <- rbind(data.frame(dat=x, grp="All")) #Creating dataframe with values to be ploted
+  # Generate the data specifically for the plot. A matrix with the expected values from Benford's law and the percent of initial digist observed in the dataset.
+  ds <- t(as.matrix(data.frame(expect=expect,
+                               x=calcInitialDigitDistr(x, split="none", digit=1))))
+  # Display the plot.
+  plot(1:9, ds[1,], type="b", pch=19, col=rainbow_hcl(1), ylim=c(0,max(ds)), axes=FALSE, xlab="Initial Digit", ylab="Probability")
+  axis(1, at=1:9)
+  axis(2)
+  points(1:9, ds[2,], col=rainbow_hcl(2)[2], pch=19, type="b")
+  # Add a legend to the plot.
+  legend("topright", legend, bty="n",  fill=rainbow_hcl(2))
+  # Add a title to the plot.
+  title(main=main)
+}
+op<-par(mfrow=c(3,3), mar=c(5,5,3,5))
+benford(aptt_basal,main="Days Pacing", legend=c("Benford's Law", "Days Pacing") )
+benford(atrial_heart_rate_basal,main="Baseline atrial HR", legend=c("Benford's Law", "Baseline atrial HR") )
+benford(as.numeric(ventric_heart_rate_basal),main="Baseline ventricular HR", legend=c("Benford's Law", "Baseline ventricular HR") )
+benford(qrs_duration_basal,main="Baseline QRS duration", legend=c("Benford's Law", "Baseline QRS duration") )
+benford(qrs_axis_basal,main="Baseline QRS axis", legend=c("Benford's Law", "Baseline QRS axis") )
+benford(as.numeric(hemoglobin_basal),main="Baseline Hemoglobin", legend=c("Benford's Law", "Baseline Hemoglobin") )
+benford(hematocrit_basal,main="Baseline Hematocrit", legend=c("Benford's Law", "Baseline Hematocrit") )
+benford(platelets_basal,main="Baseline Platelets", legend=c("Benford's Law", "Baseline Platelets") )
+benford(leukocytes_basal,main="Baseline Leukocytes", legend=c("Benford's Law", "Baseline Leukocytes") )
+par(op)
+op<-par(mfrow=c(3,3), mar=c(5,5,3,5))
+benford(urea_basal,main="Baseline Urea", legend=c("Benford's Law", "Baseline Urea") )
+benford(creatinine_basal,main="Baseline Creatinine", legend=c("Benford's Law", "Baseline Creatinine") )
+benford(sodium_basal,main="Baseline Sodium", legend=c("Benford's Law", "Baseline Sodium") )
+benford(potassium_basal,main="Baseline Potassium", legend=c("Benford's Law", "Baseline Potassium") )
+benford(prothrombin_time_basal,main="Baseline Prothrombin Time", legend=c("Benford's Law", "Baseline Prothrombin Time") )
+benford(prothrombin_time_basal,main="Baseline Prothrombin Activity", legend=c("Benford's Law", "Baseline Prothrombin Activity") )
+benford(prothrombin_activity_basal,main="Baseline aPTT", legend=c("Benford's Law", "Baseline aPTT") )
+benford(inr_basal,main="Baseline INR", legend=c("Benford's Law", "Baseline INR") )
+par(op)
+```
+
+## Data Association
+
+Figures regarding associations between variables from the Glocal Registry project projetc are presente below. First set of figures show the the comparison of numeric variables from our dataset between subjects devided by randomization.
+
+Data association and prediction plots are generated based on boxplots for reports on numeric data and association plots for categorical data. Two examples are shown. The first is a set of boxplots (a) presenting the comparison of Time of Pacemaker Implantation, Duration of the Procedure and Length of Hospital Stay between randomization groups (left and right ventricle). The second (b) one is an Cohen-Friendly association plot showing the proportion of complications between randomization groups. This plot shows the distribution of the outcome in a contingency table, represented by the rectangles. Red colored boxes represent a cell where the observed frequency is higher than the expected while the black figure shows the opposite, also the area of the boxes indicate the size of the difference. 
+
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE }
+#Recoding variables to improve graphical visualization
+randomizationcat<-car::recode(randomization,"'1'='Right Ventricle'; '2'='Left Ventricle'")
+intraop_complicationscat<-car::recode(intraop_complications,"'1'='Yes'; '0'='No'")
+
+#data frame for data association plots
+boxplots<-data.frame(total_lead_positioning, total_procedure_time,
+                     intraop_complicationscat,length_hospital_stay,randomizationcat)
+
+#Association between Randomization vs. Time of implant
+box1<-ggplot(boxplots, aes(randomizationcat, total_lead_positioning)) + 
+  geom_boxplot() +
+  geom_jitter() + theme_bw() +
+  ylab("Time of implant") + xlab("Randomization")
+
+#Association between Randomization vs. Time of Procedure
+box2<-ggplot(boxplots, aes(randomizationcat, total_procedure_time)) + 
+  geom_boxplot() +
+  geom_jitter() + theme_bw() +
+  ylab("Time of procedure") + xlab("Randomization")
+
+#Association between Randomization vs. Length of stay
+box3<-ggplot(boxplots, aes(randomizationcat, length_hospital_stay)) + 
+  geom_boxplot() +
+  geom_jitter() + theme_bw() +
+  ylab("Length of stay") + xlab("Randomization")
+
+grid.arrange(box1,box2,box3)
+
+#Association between Randomization vs.Complication in Procedure
+par(mfrow=c(1,1))
+y<-as.matrix(table(randomizationcat,intraop_complicationscat))
+x <- margin.table(y, margin=NULL)
+assocplot(y, main = "Association between Randomization and 
+          Complications during procedure", xlab="Randomization", ylab="Complications")
+table<- table(randomizationcat,intraop_complicationscat)
+assocstats(table)
+
+#Logistis regression model
+#logregmodel<-glm(test$qvc50cat ~ cuidador+estcivil,family=binomial, data=test)
+#summary(qvcXsocio4)
+#anova(qvcXsocio4)
+#exp(coef(qvcXsocio4)) # exponentiated coefficients
+#exp(confint(qvcXsocio4)) # 95% CI for exponentiated coefficients
+#predict(qvcXsocio4, type="response") # predicted values
+#residuals(qvcXsocio4, type="deviance") # residuals
+```
+
+Below is an application of the MINE (maximal Information-based Nonparametric Exploration) algorithm from the Science article [Detecting Novel Association in Large Data Sets](http://www.sciencemag.org/content/334/6062/1518.abstract?ijkey=cRCIlh2G7AjiA&keytype=ref&siteid=sci). See also [http://www.exploredata.net/](http://www.exploredata.net/). This application was used to explore the associations between variables inside the dataset. Variables with highe values of linear relation (MIC)  as well as the analysis of non-lnear associations (MAS) are shown in figures below.
+
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE }
+#Files MINE.r and MINE.jav must be in the same directory as the workspace so the analysis can #run. See http://www.exploredata.net/ for more information
+source("MINE.r") #Functions repository. Importanto to load the function. This files should be kept in the same folder as the R-Script and the dataset.
+#Creating a data.frame with the variables that will enter in the MINE analysis
+MINEdata<-data.frame(atrial_heart_rate_basal, ventric_heart_rate_basal, qrs_duration_basal, qrs_axis_basal, hemoglobin_basal, hematocrit_basal, platelets_basal, leukocytes_basal, urea_basal, creatinine_basal, sodium_basal, potassium_basal, prothrombin_time_basal, prothrombin_activity_basal, aptt_basal, inr_basal,total_procedure_time)
+
+#Transforming the dataset into a .csv file, from where the MINE script will perform the analysis
+write.csv(MINEdata,file="MINEdata.csv") 
+
+#MINE function
+MINE("MINEdata.csv","all.pairs",0,5)
+#Loading Mine results from the .csv file created by the MINE function
+minedata <- read.csv("MINEdata.csv,allpairs,cv=0.0,B=n^0.6,Results.csv")
+attach(minedata) #Carry data
+Mine<-subset(minedata,MIC..strength.>0.4)# Create subsett with MINE results (MIC) above 0.4
+Mine #Show the data in the pdf report
+```
+
+After analyzing MINE results, we took the higher MIC and non-linear relations indicatores to plot in scatter plots. First set of plots show pairs of relation with MIC higher than 0.4, also clustered by randomization value.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+scatterplot(data[,as.character(Mine$X.var[1])] ~ data[,as.character(Mine$Y.var[1])] |randomization, data=data, 
+            xlab=as.character(Mine$X.var[1]), ylab=as.character(Mine$Y.var[1]), 
+            main="", 
+            labels=row.names(data), boxplots=FALSE)
+scatterplot(data[,as.character(Mine$X.var[2])] ~ data[,as.character(Mine$Y.var[2])] | randomization, data=data, 
+            xlab=as.character(Mine$X.var[2]), ylab=as.character(Mine$Y.var[2]), 
+            main="", 
+            labels=row.names(data))
+scatterplot(data[,as.character(Mine$X.var[3])] ~ data[,as.character(Mine$Y.var[3])] | randomization, data=data, 
+            xlab=as.character(Mine$X.var[3]), ylab=as.character(Mine$Y.var[3]), 
+            main="", 
+            labels=row.names(data))
+scatterplot(data[,as.character(Mine$X.var[4])] ~ data[,as.character(Mine$Y.var[4])] | randomization, data=data, 
+            xlab=as.character(Mine$X.var[4]), ylab=as.character(Mine$Y.var[4]), 
+            main="", 
+            labels=row.names(data))
+scatterplot(data[,as.character(Mine$X.var[5])] ~ data[,as.character(Mine$Y.var[5])] | randomization, data=data, 
+            xlab=as.character(Mine$X.var[5]), ylab=as.character(Mine$Y.var[5]), 
+            main="", 
+            labels=row.names(data))
+scatterplot(data[,as.character(Mine$X.var[6])] ~ data[,as.character(Mine$Y.var[6])] | randomization, data=data, 
+            xlab=as.character(Mine$X.var[6]), ylab=as.character(Mine$Y.var[6]), 
+            main="", 
+            labels=row.names(data))
+```
+
+Second set of plots show pairs of relation with MIC non-linear higher than 0.4, also clustered by randomization value. This allows one to observe non-linear associations.
+
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE }
+Nonlinear<-subset(minedata,MIC.p.2..nonlinearity.>0.4)
+Nonlinear
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+scatterplot(data[,as.character(Nonlinear$X.var[1])] ~ data[,as.character(Nonlinear$Y.var[1])] | randomization, data=data, 
+            xlab=as.character(Nonlinear$X.var[1]), ylab=as.character(Nonlinear$Y.var[1]), 
+            main="", 
+            labels=row.names(data))
+scatterplot(data[,as.character(Nonlinear$X.var[2])] ~ data[,as.character(Nonlinear$Y.var[2])] | randomization, data=data, 
+            xlab=as.character(Nonlinear$X.var[2]), ylab=as.character(Nonlinear$Y.var[2]), 
+            main="", 
+            labels=row.names(data))
+scatterplot(data[,as.character(Nonlinear$X.var[3])] ~ data[,as.character(Nonlinear$Y.var[3])] | randomization, data=data, 
+            xlab=as.character(Nonlinear$X.var[3]), ylab=as.character(Nonlinear$Y.var[3]), 
+            main="", 
+            labels=row.names(data))
+scatterplot(data[,as.character(Nonlinear$X.var[4])] ~ data[,as.character(Nonlinear$Y.var[4])] | randomization, data=data, 
+            xlab=as.character(Nonlinear$X.var[4]), ylab=as.character(Nonlinear$Y.var[4]), 
+            main="", 
+            labels=row.names(data))
+scatterplot(data[,as.character(Nonlinear$X.var[5])] ~ data[,as.character(Nonlinear$Y.var[5])] | randomization, data=data, 
+            xlab=as.character(Nonlinear$X.var[5]), ylab=as.character(Nonlinear$Y.var[5]), 
+            main="", 
+            labels=row.names(data))
+scatterplot(data[,as.character(Nonlinear$X.var[6])] ~ data[,as.character(Nonlinear$Y.var[6])] | randomization, data=data, 
+            xlab=as.character(Nonlinear$X.var[6]), ylab=as.character(Nonlinear$Y.var[6]), 
+            main="", 
+            labels=row.names(data))
+```
